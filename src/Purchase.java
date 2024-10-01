@@ -12,5 +12,8 @@ public class Purchase {
         this.customerId = customerId;
         productList = new ArrayList<>();
     }
-
 }
+
+/*
+same question as in the Product class
+ */

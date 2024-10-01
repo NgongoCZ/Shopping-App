@@ -24,6 +24,12 @@ public class Product {
 
     @Override
     public String toString(){
-        return "Product name: " + productName + "\nProduct Price: " + productPrice + "\nProduct ID: " + productId;
+        return "Product name: " + productName + "\nProduct Price: " + productPrice + "\nProduct ID: " + productId + "\n";
     }
 }
+
+/*
+do I need to create a new class for product
+or should I just create new products as an ArrayList
+and then save each of them in one general ArrayList ?
+ */

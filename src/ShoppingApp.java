@@ -5,6 +5,6 @@ public class ShoppingApp {
 
         Scanner myScanner = new Scanner(System.in);
         ShoppingAppLogic programLogic = new ShoppingAppLogic(myScanner);
-        programLogic.start();
+        programLogic.switchStart();
     }
 }

@@ -16,12 +16,17 @@ public class ShoppingCentre {
         customerList.add(customer);
     }
 
+    //prints all customers (for testing)
     public void printAllCustomers(){
         for (Customer customer : customerList){
             System.out.println(customer);
         }
     }
 
+    /*
+    do I need the number of customer instance variable
+    or can I replace it with getNumberOfCustomers() ?
+     */
     public int getNumberOfCustomers(){
         return customerList.size();
     }
