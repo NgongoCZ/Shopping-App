@@ -1,16 +1,21 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Random;
 
 public class ShoppingAppLogic {
 
     private ArrayList<ShoppingCentre> listOfShoppingCenters;
     private Scanner myScanner;
     private ArrayList<Product> listOfProducts;
+    private ArrayList<Purchase> purchaseList;
+    private ArrayList<Customer> listOfCustomers;
 
     public ShoppingAppLogic(Scanner myScanner) {
         this.myScanner = myScanner;
         this.listOfShoppingCenters = new ArrayList<>();
         this.listOfProducts = new ArrayList<>();
+        this.purchaseList = new ArrayList<>();
+        this.listOfCustomers = new ArrayList<>();
     }
 
     // start of the program contains main commands
@@ -63,9 +68,13 @@ public class ShoppingAppLogic {
                 case "list" -> showCommands();
                 case "create_customer" -> createCustomer();
                 case "create_center" -> createShoppingCentre();
-                case "show_center" -> printShoppingCenter(getShoppingCenterByName(myScanner.nextLine()));
+                case "show_center" ->{
+                    System.out.println("Which shopping center are you looking for ?");
+                    printShoppingCenter(getShoppingCenterByName(myScanner.nextLine()));
+                }
                 case "create_product" -> createProduct();
                 case "show_products" -> printProducts();
+                case "create_purchase" -> makePurchase();
                 case "exit" -> {
                     System.out.println("Program exit, have a nice day");
                     continueReading = false;
@@ -151,6 +160,9 @@ public class ShoppingAppLogic {
                 getShoppingCenterByName(choseShoppingCentre).addCustomer(newCustomer);
                 System.out.println("Customer added to the " + choseShoppingCentre + " center");
 
+                // adding new customer to the listOfCustomers
+                listOfCustomers.add(newCustomer);
+
 
                 System.out.println("Do you wat to create another customer ? y/n");
                 String answer = myScanner.nextLine();
@@ -159,6 +171,13 @@ public class ShoppingAppLogic {
                     break;
                 }
             }
+        }
+    }
+
+    // method for printing all customer names
+    public void printAllCustomerNames(){
+        for (Customer customer : listOfCustomers){
+            System.out.println(customer.getFirstName() + " " + customer.getSecondName());
         }
     }
 
@@ -177,8 +196,15 @@ public class ShoppingAppLogic {
         System.out.println(shoppingCenter);
     }
 
+    // method for printing all Shopping Center names
+    public void printAllShoppingCenterNames(){
+        for (ShoppingCentre shop : listOfShoppingCenters){
+            System.out.println(shop.getShopName());
+        }
+    }
+
     public void showCommands() {
-        System.out.println("exit - 'exits the program'\ncreate_center - 'creates a new shopping center\ncreate_customer - 'creates a new customer'\ncreate_product - 'creates new product'\nshow_center - 'shows a list of shopping centers'\nshow_products - 'shows list of all products'");
+        System.out.println("exit - 'exits the program'\ncreate_center - 'creates a new shopping center\ncreate_customer - 'creates a new customer'\ncreate_product - 'creates new product'\nshow_center - 'shows a list of shopping centers'\nshow_products - 'shows list of all products'\ncreate_purchase - 'creates a new purchase'");
     }
 
     // method for creating and saving new product int listOfProducts
@@ -265,7 +291,108 @@ public class ShoppingAppLogic {
             System.out.println(product);
         }
     }
-}
+
+    public Product getProductByName(String productName){
+        for (Product product : listOfProducts){
+            if (productName.equals(product.getProductName())){
+                return product;
+            }
+        }
+        return null;
+    }
+
+    // method for creating a purchase
+    public void makePurchase(){
+        String continuePurchase;
+
+            while (true){
+                System.out.println("Do you want to create a new purchase ? y/n");
+                continuePurchase = myScanner.nextLine();
+                if (continuePurchase.equals("n")){
+                    System.out.println("Purchase creation terminated. Have a nice day");
+                    break;
+                }
+                System.out.println("In which shopping center is the purchase made ? ");
+                printAllShoppingCenterNames();
+                String findCenterName = myScanner.nextLine();
+                String shoppingCenterName;
+                if (findCenterName.equals(getShoppingCenterByName(findCenterName).getShopName())){
+                    shoppingCenterName = findCenterName;
+                }else {
+                    System.out.println("Wrong shopping center name. Please try again");
+                    continue;
+                }
+
+                String customerFirstName;
+                String customerSecondName;
+                try{
+                    System.out.println("Which customer makes the purchase ?");
+                    printAllCustomerNames();
+                    String getFullCustomerNAme = (myScanner.nextLine()).toLowerCase();
+                    String[]customerFullName = getFullCustomerNAme.split(" ");
+                    customerFirstName = customerFullName[0];
+                    customerSecondName = customerFullName[1];
+                }catch (IndexOutOfBoundsException e){
+                    System.out.println("Wrong name input. Write full name once again");
+
+                    System.out.println("Which customer makes the purchase ?");
+                    printAllCustomerNames();
+                    String getFullCustomerNAme = (myScanner.nextLine()).toLowerCase();
+                    String[]customerFullName = getFullCustomerNAme.split(" ");
+                    customerFirstName = customerFullName[0];
+                    customerSecondName = customerFullName[1];
+                }
+                // how to add another exception "ArrayOutOfBoundException"
+
+                int customerID = 0;
+
+                for (Customer customer : listOfCustomers){
+                    if (customer.getFirstName().toLowerCase().equals(customerFirstName) && customer.getSecondName().toLowerCase().equals(customerSecondName)){
+                        customerID = customer.getCustomerId();
+                    }else {
+                        System.out.println("Wrong customer name. Please try again");
+                        continue;
+                    }
+                }
+
+                System.out.println("Proceeding to list of products. A new shopping basket created");
+                ArrayList<Product>shoppingBasket = new ArrayList<>();
+                double price = 0;
+                boolean isFull = false;
+
+                do {
+                    System.out.println("Which product to buy ?");
+                    if (listOfProducts.isEmpty()){
+                        System.out.println("There are no product. Sorry");
+                        break;
+                    }else {
+                        String productName = myScanner.nextLine();
+                        if (listOfProducts.contains(getProductByName(productName))){
+                            shoppingBasket.add(getProductByName(productName));
+                            price += (double) getProductByName(productName).getProductPrice();
+                        }else {
+                            System.out.println("There is no such product. Please try again");
+                            continue;
+                        }
+                    }
+
+                    System.out.println("Do you want to add another product ? y/n");
+                    String continueShopping = myScanner.nextLine();
+                    isFull = continueShopping.equals("y") ? true : false;
+
+                }while (isFull);
+
+                System.out.println("Generating purchase Id...");
+                Random randomNum = new Random();
+                long purchaseId = randomNum.nextLong(999) + 1;
+
+                purchaseList.add(new Purchase(purchaseId, price, customerID, shoppingCenterName ));
+                System.out.println("A new purchase record was created");
+                System.out.println(purchaseList.getLast());
+            }
+        }
+    }
+
 
 /*
 should I write information outputs for user in methods
